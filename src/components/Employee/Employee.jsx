@@ -21,7 +21,7 @@ const Employee = ({employees,selectedTeam,handleEmployeeCardClick,handleTeamSele
                 <div className='card-collection'>
                 {
                 employees.map((employee)=>(
-                    <div id={employee.id} 
+                    <div id={employee.id} key={employee.id}
                     className={(employee.teamName === selectedTeam ? 'card m-2 standout': 'card m-2')} 
                     style={{cursor:"pointer"}} 
                     onClick={handleEmployeeCardClick}

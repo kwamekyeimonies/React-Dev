@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import Content from './components/Content/Content'
 import Employee from './components/Employee/Employee'
 import Footer from './components/Footer/Footer'
 import Header from './components/Header/Header'
@@ -6,7 +7,7 @@ import "./App.css"
 
 const App = () => {
 
-  const [employees, setEmployees] = useState(JSON.stringify(localStorage.getItem('employeeList')) || [
+  const [employees, setEmployees] = useState([
     {
         id: 1,
         fullName: "Bob Jones",
@@ -93,7 +94,7 @@ const App = () => {
       }
 ]);
 
-const [selectedTeam, setSelectedTeam] = useState(JSON.parse(localStorage.getItem('selectedTeam')) || ("TeamB"))
+const [selectedTeam, setSelectedTeam] = useState("TeamB")
 
 const handleTeamSelectionChange=(event)=>{
     console.log(event.target.value)
@@ -110,11 +111,11 @@ const handleEmployeeCardClick=(event)=>{
 }
 
 useEffect(()=>{
-  localStorage.setItem('employeeList',JSON.stringify(employees))
-},[])
+  localStorage.setItem('employeeList', JSON.stringify(employees))
+},[employees])
 
 useEffect(()=>{
-  localStorage.setItem('selectedTeam',JSON.stringify(selectedTeam))
+  localStorage.setItem('selectedTeam', JSON.stringify(selectedTeam))
 },[selectedTeam])
 
   return (
