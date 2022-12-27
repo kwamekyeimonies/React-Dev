@@ -1,137 +1,79 @@
-import React, { useEffect, useState } from 'react'
-import Content from './components/Content/Content'
-import Employee from './components/Employee/Employee'
-import Footer from './components/Footer/Footer'
-import Header from './components/Header/Header'
-import "./App.css"
+import React, { useState } from 'react'
+import Additem from './Components/Additem'
+import Content from './Components/Content'
+import Footer from './Components/Footer'
+import Header from './Components/Header'
+import SearchItem from './Components/SearchItem'
 
-const App = () => {
-
-  const [employees, setEmployees] = useState([
+const App = () => { 
+  const [items, setItems] = useState(JSON.parse(localStorage.getItem("ShoppingList")) || [
     {
-        id: 1,
-        fullName: "Bob Jones",
-        designation: "JavaScript Developer",
-        gender: "male",
-        teamName: "TeamA"
-      },
-      {
-        id: 2,
-        fullName: "Jill Bailey",
-        designation: "Node Developer",
-        gender: "female",
-        teamName: "TeamA"
-      },
-      {
-        id: 3,
-        fullName: "Gail Shepherd",
-        designation: "Java Developer",
-        gender: "female",
-        teamName: "TeamA"
-      },
-      {
-        id: 4,
-        fullName: "Sam Reynolds",
-        designation: "React Developer",
-        gender: "male",
-        teamName: "TeamB"
-      },
-      {
-        id: 5,
-        fullName: "David Henry",
-        designation: "DotNet Developer",
-        gender: "male",
-        teamName: "TeamB"
-      },
-      {
-        id: 6,
-        fullName: "Sarah Blake",
-        designation: "SQL Server DBA",
-        gender: "female",
-        teamName: "TeamB"
-      },
-      {
-        id: 7,
-        fullName: "James Bennet",
-        designation: "Angular Developer",
-        gender: "male",
-        teamName: "TeamC"
-      },
-      {
-        id: 8,
-        fullName: "Jessica Faye",
-        designation: "API Developer",
-        gender: "female",
-        teamName: "TeamC"
-      },
-      {
-        id: 9,
-        fullName: "Lita Stone",
-        designation: "C++ Developer",
-        gender: "female",
-        teamName: "TeamC"
-      },
-      {
-        id: 10,
-        fullName: "Daniel Young",
-        designation: "Python Developer",
-        gender: "male",
-        teamName: "TeamD"
-      },
-      {
-        id: 11,
-        fullName: "Adrian Jacobs",
-        designation: "Vue Developer",
-        gender: "male",
-        teamName: "TeamD"
-      },
-      {
-        id: 12,
-        fullName: "Devin Monroe",
-        designation: "Graphic Designer",
-        gender: "male",
-        teamName: "TeamD"
-      }
-]);
+        id:1,
+        checked:true,
+        item:"First Item"
+    },
+    {
+        id:2,
+        checked:false,
+        item:"Second Item"
+    },
+    {
+        id:3,
+        checked:false,
+        item:"Item 3"
+    }
+])
 
-const [selectedTeam, setSelectedTeam] = useState("TeamB")
+const [newItem, setNewItem] = useState('');
+const [search,setSearch] = useState(" ");
 
-const handleTeamSelectionChange=(event)=>{
-    console.log(event.target.value)
-    setSelectedTeam(event.target.value)
+const setAndSaveItems = (newItems)=>{
+  setItems(newItems)
+  localStorage.setItem("ShoppingList",JSON.stringify(newItems))
 }
 
-const handleEmployeeCardClick=(event)=>{
-    const transformedEmployees = employees.map((employ)=> employ.id === parseInt(event.currenttarget.id)
-    ? (employ.teamName === selectedTeam) ? {...employ,teamName:''}: {...employ, teamName: selectedTeam}
-    : employ
-    )
-
-    setEmployees(transformedEmployees)
+const addItem =(item)=>{
+  const id = items.length ? items[items.length-1].id+1 : 1
+  const myNewItem = {id, checked:false , item}
+  const listItems= [...items,myNewItem]
+  setAndSaveItems(listItems)
 }
 
-useEffect(()=>{
-  localStorage.setItem('employeeList', JSON.stringify(employees))
-},[employees])
+const handleCheck = (id) =>{
+  // console.log(`key: ${id}`)
+  const listItems = items.map((item)=> item.id === id ? {...item, checked: !item.checked} : item)
+  setAndSaveItems(listItems)
 
-useEffect(()=>{
-  localStorage.setItem('selectedTeam', JSON.stringify(selectedTeam))
-},[selectedTeam])
+}
+
+const handleDelete = (id) =>{
+  // console.log(id)
+  const listItems = items.filter((item)=> item.id !== id);
+  console.log(listItems)
+ setAndSaveItems(listItems)
+}
+
+const handleSubmit=(e)=>{
+  e.preventDefault()
+  if (!newItem) return;
+  addItem(newItem)
+  setNewItem('')
+  console.log(newItem)
+
+}
+
 
   return (
-    <div>
-      <Header 
-      selectedTeam={selectedTeam}
-      teamMemberCount={employees.filter((employee)=> employee.teamName === selectedTeam).length}
+    <div className='App'> 
+      <Header title="Training Session" />
+      <Additem newItem={newItem} setNewItem={setNewItem} handleSubmit={handleSubmit} />
+      <SearchItem search={search} setSearch={setSearch} />
+      <Content 
+      items={items.filter(item=>((item.item).toLowerCase()).includes(search.toLowerCase()))}
+      handleCheck={handleCheck}
+      handleDelete={handleDelete}
       />
-      <Employee 
-      employees ={employees} 
-      selectedTeam={selectedTeam}
-      handleEmployeeCardClick={handleEmployeeCardClick}
-      handleTeamSelectionChange={handleTeamSelectionChange}
-      />
-       {/* <Content  /> */}
-      <Footer />
+      <Footer length={items.length} />
     </div>
   )
 }
